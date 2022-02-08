@@ -12,8 +12,13 @@ pub struct Circuit {
 	nodes: Vec<node::Node>
 }
 impl Circuit {
-	pub fn add_element(&mut self) {
-		self.elements.push(element::create_element());
+	pub fn add_element(
+			&mut self,
+			voltage_drop: (f32, bool),
+			resistance: (f32, bool),
+			current: (f32, bool)
+		) {
+		self.elements.push(element::create_element(voltage_drop, resistance, current));
 	}
 	pub fn add_node(&mut self) {
 		self.nodes.push(node::create_node());
