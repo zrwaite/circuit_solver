@@ -16,9 +16,10 @@ impl Circuit {
 			&mut self,
 			voltage_drop: (f32, bool),
 			resistance: (f32, bool),
-			current: (f32, bool)
+			current: (f32, bool),
+			power: (f32, bool)
 		) {
-		self.elements.push(element::create_element(voltage_drop, resistance, current));
+		self.elements.push(element::create_element(voltage_drop, resistance, current, power));
 	}
 	pub fn add_node(&mut self) {
 		self.nodes.push(node::create_node());

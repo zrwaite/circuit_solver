@@ -3,15 +3,11 @@ mod circuit;
 fn main() {
     let mut new_circuit = circuit::create_circuit();
     new_circuit.add_element(
-        (5.0, true),
-        (5.0, true),
+        (24.0, true),
+        (5.0, false),
+        (1.0, false),
         (1.0, true)
     );
-    let voltage = new_circuit.get_elements()[0].get_voltage();
-    let current = new_circuit.get_elements()[0].get_current();
-    if current.1 {
-        println!("current: {}", current.0);
-    } else {
-        println!("current undefined");
-    }
+    let element = new_circuit.get_elements();
+    element[0].print();
 }
