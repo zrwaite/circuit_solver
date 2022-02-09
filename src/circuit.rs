@@ -25,9 +25,9 @@ impl Circuit {
 		self.nodes.push(node::create_node());
 	}
 	pub fn get_elements(&self) -> &Vec<element::Element> {
-		return &self.elements;
+		&self.elements
 	}
 	pub fn get_nodes(&self) -> &Vec<node::Node> {
-		return &self.nodes;
+		&self.nodes
 	}
 }
