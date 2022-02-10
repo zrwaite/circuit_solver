@@ -1,3 +1,5 @@
+pub mod resistor;
+
 pub fn create_element(
 	voltage: (f32, bool),
 	resistance: (f32, bool),

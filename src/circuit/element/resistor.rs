@@ -1,5 +1,18 @@
 use std::io;
 
+// use element;
+
+// pub fn create_resistor
+
+
+pub struct Resistor {
+	// values: element::Element,
+	voltage: (f32, bool),
+	resistance: (f32, bool),
+	current: (f32, bool),
+	power: (f32, bool)
+}
+
 pub fn get_value(value_type: String, colour:String) -> (i32, bool){
 	if !(value_type.eq("num") || value_type.eq("multiply")) {
 		panic!("Invalid value_type in get_value");

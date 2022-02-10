@@ -1,8 +1,7 @@
 mod circuit;
-mod resistors;
 
 fn main() {
-    resistors::get_resistance();
+    circuit::element::resistor::get_resistance();
     // let mut new_circuit = circuit::create_circuit();
     // new_circuit.add_element(
     //     (24.0, true),

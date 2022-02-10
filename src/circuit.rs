@@ -1,4 +1,4 @@
-mod element;
+pub mod element;
 mod node;
 pub fn create_circuit() -> Circuit{
 	let new_circuit = Circuit{
