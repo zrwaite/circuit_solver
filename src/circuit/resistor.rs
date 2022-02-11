@@ -1,21 +1,4 @@
-mod element_values;
-
-pub fn create_resistor(
-	resistance: (f32, bool),
-	name: String
-) -> Resistor{
-	//Constructor
-	let mut new_resistor = Resistor{
-		values: element_values::create_element_values(
-			(0.0, false),
-			resistance, 
-			(0.0, false),
-			(0.0, false),
-		),
-		name
-    };
-	return new_resistor;
-}
+#[path = "./element_values.rs"] mod element_values;
 
 pub struct Resistor {
 	values: element_values::ElementValues,
@@ -25,6 +8,26 @@ pub struct Resistor {
 impl Resistor {
 	/* Getters */
 	pub fn get_values(&self) -> &element_values::ElementValues {&self.values}
+	pub fn print(&self) {
+		println!("{} values:", self.name);
+		self.values.print();
+	}
+	pub fn new(
+		resistance: (f32, bool),
+		name: String
+	) -> Resistor{
+		//Constructor
+		let mut new_resistor = Resistor{
+			values: element_values::ElementValues::new(
+				(0.0, false),
+				resistance, 
+				(0.0, false),
+				(0.0, false),
+			),
+			name
+		};
+		return new_resistor;
+	}
 }
 
 pub fn get_value(value_type: String, colour:String) -> i32 {
@@ -32,24 +35,24 @@ pub fn get_value(value_type: String, colour:String) -> i32 {
 		panic!("Invalid value_type in get_value");
 	}
 	let mut value = 0;
-	match colour.as_str() {
-		"black"|"Black" => {value = 0;}
-		"brown"|"Brown" => {value = 1;}
-		"red"|"Red" => {value = 2;}
-		"orange"|"Orange" => {value = 3;}
-		"yellow"|"Yellow" => {value = 4;}
-		"green"|"Green" => {value = 5;}
-		"blue"|"Blue" => {value = 6;}
-		"violet"|"Violet"|"purple"|"Purple"|"pink"|"Pink" => {value = 7;}
-		"grey"|"Grey"|"gray"|"Gray" => {value = 8;}
-		"white"|"White"=> {value = 9;}
-		"gold"|"Gold"=> {
+	match colour.to_lowercase().as_str() {
+		"black" => {value = 0;}
+		"brown" => {value = 1;}
+		"red" => {value = 2;}
+		"orange" => {value = 3;}
+		"yellow" => {value = 4;}
+		"green" => {value = 5;}
+		"blue" => {value = 6;}
+		"violet"|"purple"|"pink" => {value = 7;}
+		"grey"|"gray" => {value = 8;}
+		"white"=> {value = 9;}
+		"gold"=> {
 			if value_type.eq("num") {
 				panic!("Gold has no associated num");
 			}
 			value = -1;
 		}
-		"silver"|"Silver"=> {
+		"silver"=> {
 			if value_type.eq("num") {
 				panic!("Silver has no associated num");
 			}

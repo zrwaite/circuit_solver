@@ -1,28 +1,28 @@
 mod element_values;
 
-pub fn create_voltage_source(
-	voltage: (f32, bool),
+pub fn create_current_source(
+	current: (f32, bool),
 	name: String
-) -> VoltageSource{
+) -> CurrentSource{
 	//Constructor
-	let mut new_voltage_source = VoltageSource{
+	let mut new_current_source = CurrentSource{
 		values: element_values::ElementValues::new(
-			voltage, 
 			(0.0, false),
 			(0.0, false),
+			current, 
 			(0.0, false),
 		),
 		name
     };
-	return new_voltage_source;
+	return new_current_source;
 }
 
-pub struct VoltageSource {
+pub struct CurrentSource {
 	values: element_values::ElementValues,
 	name: String
 }
 
-impl VoltageSource {
+impl CurrentSource {
 	/* Getters */
 	pub fn get_values(&self) -> &element_values::ElementValues {&self.values}
 }

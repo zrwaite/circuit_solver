@@ -1,30 +1,30 @@
-mod node;
-pub fn create_circuit() -> Circuit{
-	let new_circuit = Circuit{
-        elements: Vec::new(),
-        nodes: Vec::new()
-    };
-	return new_circuit;
-}
+#[path = "./circuit/node.rs"] mod node;
+#[path = "./circuit/resistor.rs"] mod resistor;
+
 pub struct Circuit {
-	elements: Vec<element::Element>,
+	resistors: Vec<resistor::Resistor>,
 	nodes: Vec<node::Node>
 }
 impl Circuit {
-	pub fn add_element(
-			&mut self,
-			voltage_drop: (f32, bool),
-			resistance: (f32, bool),
-			current: (f32, bool),
-			power: (f32, bool)
-		) {
-		self.elements.push(element::create_element(voltage_drop, resistance, current, power));
+	pub fn new() -> Circuit{
+		let new_circuit = Circuit{
+			resistors: Vec::new(),
+			nodes: Vec::new()
+		};
+		return new_circuit;
 	}
+	pub fn add_resistor(
+		&mut self,
+		name: String,
+		resistance: (f32, bool)
+	) {
+	self.resistors.push(resistor::Resistor::new(resistance, name));
+}
 	pub fn add_node(&mut self) {
-		self.nodes.push(node::create_node());
+		self.nodes.push(node::Node::new());
 	}
-	pub fn get_elements(&self) -> &Vec<element::Element> {
-		&self.elements
+	pub fn get_resistors(&self) -> &Vec<resistor::Resistor> {
+		&self.resistors
 	}
 	pub fn get_nodes(&self) -> &Vec<node::Node> {
 		&self.nodes

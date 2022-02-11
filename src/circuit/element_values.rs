@@ -1,20 +1,3 @@
-pub fn create_element_values(
-	voltage: (f32, bool),
-	resistance: (f32, bool),
-	current: (f32, bool),
-	power: (f32, bool)
-) -> ElementValues{
-	//Constructor
-	let mut new_element = ElementValues{
-		voltage: voltage,
-		resistance: resistance,
-		current: current,
-		power: power
-    };
-	new_element.validate_values();
-	new_element.try_calc();
-	return new_element;
-}
 pub struct ElementValues {
 	voltage: (f32, bool),
 	resistance: (f32, bool),
@@ -23,6 +6,23 @@ pub struct ElementValues {
 }
 
 impl ElementValues {
+	pub fn new(
+		voltage: (f32, bool),
+		resistance: (f32, bool),
+		current: (f32, bool),
+		power: (f32, bool)
+	) -> ElementValues{
+		//Constructor
+		let mut new_element = ElementValues{
+			voltage,
+			resistance,
+			current,
+			power
+		};
+		new_element.validate_values();
+		new_element.try_calc();
+		return new_element;
+	}
 	/* Getters */
 	pub fn get_voltage(&self) -> (f32, bool) {self.voltage}
 	pub fn get_resistance(&self) -> (f32, bool) {self.resistance}
