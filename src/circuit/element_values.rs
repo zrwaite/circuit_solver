@@ -1,13 +1,11 @@
-pub mod resistor;
-
-pub fn create_element(
+pub fn create_element_values(
 	voltage: (f32, bool),
 	resistance: (f32, bool),
 	current: (f32, bool),
 	power: (f32, bool)
-) -> Element{
+) -> ElementValues{
 	//Constructor
-	let mut new_element = Element{
+	let mut new_element = ElementValues{
 		voltage: voltage,
 		resistance: resistance,
 		current: current,
@@ -17,18 +15,19 @@ pub fn create_element(
 	new_element.try_calc();
 	return new_element;
 }
-pub struct Element {
+pub struct ElementValues {
 	voltage: (f32, bool),
 	resistance: (f32, bool),
 	current: (f32, bool),
 	power: (f32, bool)
 }
 
-impl Element {
+impl ElementValues {
 	/* Getters */
 	pub fn get_voltage(&self) -> (f32, bool) {self.voltage}
 	pub fn get_resistance(&self) -> (f32, bool) {self.resistance}
 	pub fn get_current(&self) -> (f32, bool) {self.current}
+	pub fn get_power(&self) -> (f32, bool) {self.power}
 
 	pub fn print(&self) {
 		//Prints the values of the object
@@ -36,7 +35,7 @@ impl Element {
 		let current = if self.current.1 { self.current.0.to_string() } else { String::from("undefined") };
 		let resistance = if self.resistance.1 { self.resistance.0.to_string() } else { String::from("undefined") };
 		let power = if self.power.1 { self.power.0.to_string() } else { String::from("undefined") };
-		println!("<Voltage: {}V> <Resistance: {}Ω> <Current: {}A> <Power: {}J/s>", voltage, resistance, current, power);
+		println!("<Voltage: {}V> <Resistance: {}Ω> <Current: {}A> <Power: {}W>", voltage, resistance, current, power);
 	}
 	
 	fn validate_values(&self) {
