@@ -1,3 +1,5 @@
+use colored::*;
+
 pub struct ElementValues {
 	voltage: (f32, bool),
 	resistance: (f32, bool),
@@ -31,11 +33,16 @@ impl ElementValues {
 
 	pub fn print(&self) {
 		//Prints the values of the object
-		let voltage = if self.voltage.1 { self.voltage.0.to_string() } else { String::from("undefined") };
-		let current = if self.current.1 { self.current.0.to_string() } else { String::from("undefined") };
-		let resistance = if self.resistance.1 { self.resistance.0.to_string() } else { String::from("undefined") };
-		let power = if self.power.1 { self.power.0.to_string() } else { String::from("undefined") };
-		println!("<Voltage: {}V> <Resistance: {}Ω> <Current: {}A> <Power: {}W>", voltage, resistance, current, power);
+		let voltage = if self.voltage.1 { self.voltage.0.to_string() } else { String::from("?") };
+		let current = if self.current.1 { self.current.0.to_string() } else { String::from("?") };
+		let resistance = if self.resistance.1 { self.resistance.0.to_string() } else { String::from("?") };
+		let power = if self.power.1 { self.power.0.to_string() } else { String::from("?") };
+		let voltage_string = format!("<V: {}V>", voltage);
+		let current_string = format!("<I: {}A>", current);
+		let resistance_string = format!("<R: {}Ω>", resistance);
+		let power_string = format!("<P: {}W>", power);
+
+		println!("{} {} {} {}", voltage_string.green(), resistance_string.purple(), current_string.yellow(), power_string.blue());
 	}
 	
 	fn validate_values(&self) {

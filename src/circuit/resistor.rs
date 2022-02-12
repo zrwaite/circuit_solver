@@ -8,6 +8,7 @@ pub struct Resistor {
 impl Resistor {
 	/* Getters */
 	pub fn get_values(&self) -> &element_values::ElementValues {&self.values}
+	pub fn get_name(&self) -> &str {&self.name}
 	pub fn print(&self) {
 		println!("{} values:", self.name);
 		self.values.print();
@@ -17,7 +18,7 @@ impl Resistor {
 		name: String
 	) -> Resistor{
 		//Constructor
-		let mut new_resistor = Resistor{
+		let new_resistor = Resistor{
 			values: element_values::ElementValues::new(
 				(0.0, false),
 				resistance, 
@@ -34,7 +35,7 @@ pub fn get_value(value_type: String, colour:String) -> i32 {
 	if !(value_type.eq("num") || value_type.eq("multiply")) {
 		panic!("Invalid value_type in get_value");
 	}
-	let mut value = 0;
+	let value;
 	match colour.to_lowercase().as_str() {
 		"black" => {value = 0;}
 		"brown" => {value = 1;}

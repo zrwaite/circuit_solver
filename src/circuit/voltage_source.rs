@@ -24,5 +24,5 @@ impl VoltageSource {
 	}
 	/* Getters */
 	pub fn get_values(&self) -> &element_values::ElementValues {&self.values}
-
+	pub fn get_name(&self) -> &str {&self.name}
 }

@@ -2,6 +2,10 @@
 #[path = "./circuit/resistor.rs"] mod resistor;
 #[path = "./circuit/voltage_source.rs"] mod voltage_source;
 #[path = "./circuit/current_source.rs"] mod current_source;
+#[path = "./terminal/terminal_functions.rs"] mod terminal_functions;
+use terminal_functions as tf;
+use colored::*;
+
 
 pub struct Circuit {
 	voltage_sources: Vec<voltage_source::VoltageSource>,
@@ -51,12 +55,18 @@ impl Circuit {
 	}
 	pub fn print_elements(&self) {
 		for current_source in self.current_sources.iter() {
+			let name_prefix = format!(" {}: ", current_source.get_name());
+			tf::print_prefix(&name_prefix);
 			current_source.get_values().print();
 		}
 		for voltage_source in self.voltage_sources.iter() {
+			let name_prefix = format!(" {}: ", voltage_source.get_name());
+			tf::print_prefix(&name_prefix);
 			voltage_source.get_values().print();
 		}
 		for resistor in self.resistors.iter() {
+			let name_prefix = format!(" {}: ", resistor.get_name());
+			tf::print_prefix(&name_prefix);
 			resistor.get_values().print();
 		}
 		
