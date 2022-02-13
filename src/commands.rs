@@ -6,7 +6,7 @@ pub mod commands {
 	pub fn is_single_flag(arg: String) -> bool {
 		if arg.len() < 2 {return false;}
 		else if arg[0..1].to_string().eq("-") {
-			if arg.len()>2 && arg[1..2].to_string().eq("-") {
+			if arg.len()> 2 && arg[1..2].to_string().eq("-") {
 				return false;
 			}
 			return true;
@@ -33,7 +33,7 @@ pub mod commands {
 					success = false;
 				}
 				//Set new flag
-				single_flag = (command_string, true);
+				single_flag = (&command_string[1..], true);
 			} else if is_double_flag(command_string.to_string()) {
 				if single_flag.1 && !single_flags.contains_key(single_flag.0) {
 					// New flag being declared while previous flag has no value
@@ -42,7 +42,7 @@ pub mod commands {
 				}
 				single_flag.1 = false;
 				//Add double flag to list
-				double_flags.push(command_string.to_string());
+				double_flags.push(command_string[2..].to_string());
 			} else if single_flag.1 {
 				if !single_flags.contains_key(single_flag.0) {
 					single_flags.insert(single_flag.0.to_string(), command_string.to_string());
@@ -56,4 +56,15 @@ pub mod commands {
 		}
 		(single_flags, double_flags, success)
 	}
+	pub fn parse_f32(string_value: String, fail_message: &str) -> (f32, bool) {
+		let f32_value: f32;
+		f32_value = match string_value.trim().parse() {
+			Ok(num) => num,
+			Err(_) => {
+				tf::println_fail(fail_message);
+				return (0.0, false);
+			}
+		};
+		return (f32_value, true);
+	}	
 }

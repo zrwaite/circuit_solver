@@ -9,8 +9,5 @@ mod commands;
 
 
 fn main() {
-    terminal::build_circuit();
-	// let colours = terminal::read_colours();
-    // let resistance = resistor::get_resistance_from_colours(colours);
-    // println!("Resistance: {}Ω", resistance);
+    terminal::terminal::build_circuit();
 }
