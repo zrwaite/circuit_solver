@@ -1,6 +1,7 @@
 pub mod terminal {
 	use crate::commands::commands as commands;
 	use crate::circuit::circuit as circuit;
+	use crate::circuit_node::circuit_node as node;
 	use crate::get_input::get_input as get_input;
 	use crate::terminal_functions::terminal_functions as tf;
 	use std::collections::HashMap;
@@ -37,6 +38,9 @@ pub mod terminal {
 			"add_c" => {
 				add_c(command_strings[1..].to_vec(), circuit);
 			}
+			"add_n" => {
+				add_n(command_strings[1..].to_vec(), circuit);
+			}
 			"print" => {
 				circuit.print_elements();
 			}
@@ -50,6 +54,36 @@ pub mod terminal {
 		return true;
 	}
 	
+	pub fn add_node(
+		flags: (HashMap<String, String>, Vec<String>, bool), 
+		resistors: Vec<String>, 
+		current_sources: Vec<String>,
+		voltage_sources: Vec<String>) -> (node::Node, bool) {
+		let new_node = node::Node::new();
+		let mut success = true;
+		for (key, value) in flags.0 {
+			match key.to_lowercase().as_str() {
+				"r"=> {
+					
+				}
+				"v"=> {
+
+				}
+				_ => {
+					tf::println_fail(&format!("Invalid flag -{}", key));
+				}
+			}
+		}
+		for double_flag in flags.1.iter() {
+			match double_flag.to_lowercase().as_str() {
+				_ => {
+					tf::println_fail(&format!("Invalid flag --{}", double_flag));
+				}
+			}
+		}
+		(new_node, success)
+	}
+
 	
 	pub fn add_elem(elem_type:&str, flags: (HashMap<String, String>, Vec<String>, bool)) -> (String, f32, bool) {
 		let mut success = true;
@@ -82,11 +116,9 @@ pub mod terminal {
 		} 
 		if !r_name.1 {
 			r_name.0 = get_input::name(format!("Enter {} name: ", elem_type));
-			r_name.1 = true;
 		}
 		if !r_value.1 {
 			r_value.0 = get_input::value(format!("Enter {} value: ", elem_type));
-			r_value.1 = true;
 		}
 		return (r_name.0, r_value.0, true)
 	}
@@ -117,6 +149,15 @@ pub mod terminal {
 		if !voltage_source.2 {return;}
 		println!("{}", "Added!".green());
 		circuit.add_voltage_source(voltage_source.0, (voltage_source.1, true));
+	}
+	pub fn add_n(command_strings: Vec<String>, circuit: &mut circuit::Circuit) {
+		let flags = commands::get_flags(command_strings);
+		//Failed to get flags from command line
+		if !flags.2 {return;}
+		let node = add_node(flags, circuit.get_resistor_names(), circuit.get_current_source_names(), circuit.get_voltage_source_names());
+		if !node.1 {return;}
+		circuit.add_node();
+		println!("{}", "Added!".green());
 	}
 	
 	pub fn print_help() {

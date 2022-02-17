@@ -65,6 +65,6 @@ pub mod commands {
 				return (0.0, false);
 			}
 		};
-		return (f32_value, true);
+		(f32_value, true)
 	}	
 }

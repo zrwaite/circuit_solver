@@ -1,8 +1,8 @@
 pub mod current_source {
 	use crate::element_values::element_values as element_values;
 	pub struct CurrentSource {
-		values: element_values::ElementValues,
-		name: String
+		pub values: element_values::ElementValues,
+		pub name: String
 	}
 	
 	impl CurrentSource {
@@ -22,8 +22,5 @@ pub mod current_source {
 			};
 			return new_current_source;
 		}
-		/* Getters */
-		pub fn get_values(&self) -> &element_values::ElementValues {&self.values}
-		pub fn get_name(&self) -> &str {&self.name}
 	}
 }

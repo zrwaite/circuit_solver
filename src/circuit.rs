@@ -27,6 +27,27 @@ pub mod circuit {
 			};
 			return new_circuit;
 		}
+		pub fn get_current_source_names(&self) -> Vec<String> {
+			let mut current_source_names = Vec::new();
+			for current_source in self.current_sources.iter() {
+				current_source_names.push(current_source.name.to_string());
+			}
+			current_source_names
+		}
+		pub fn get_voltage_source_names(&self) -> Vec<String> {
+			let mut voltage_source_names = Vec::new();
+			for voltage_source in self.voltage_sources.iter() {
+				voltage_source_names.push(voltage_source.name.to_string());
+			}
+			voltage_source_names
+		}
+		pub fn get_resistor_names(&self) -> Vec<String> {
+			let mut resistor_names = Vec::new();
+			for resistor in self.resistors.iter() {
+				resistor_names.push(resistor.name.to_string());
+			}
+			resistor_names
+		}
 		pub fn add_resistor(
 			&mut self,
 			name: String,
@@ -51,27 +72,21 @@ pub mod circuit {
 		pub fn add_node(&mut self) {
 			self.nodes.push(node::Node::new());
 		}
-		pub fn get_resistors(&self) -> &Vec<res::Resistor> {
-			&self.resistors
-		}
-		pub fn get_nodes(&self) -> &Vec<node::Node> {
-			&self.nodes
-		}
 		pub fn print_elements(&self) {
 			for current_source in self.current_sources.iter() {
-				let name_prefix = format!(" {}: ", current_source.get_name());
+				let name_prefix = format!("(I) {}: ", current_source.name);
 				tf::print_prefix(&name_prefix);
-				current_source.get_values().print();
+				current_source.values.print();
 			}
 			for voltage_source in self.voltage_sources.iter() {
-				let name_prefix = format!(" {}: ", voltage_source.get_name());
+				let name_prefix = format!("(V) {}: ", voltage_source.name);
 				tf::print_prefix(&name_prefix);
-				voltage_source.get_values().print();
+				voltage_source.values.print();
 			}
 			for resistor in self.resistors.iter() {
-				let name_prefix = format!(" {}: ", resistor.get_name());
+				let name_prefix = format!("(R) {}: ", resistor.name);
 				tf::print_prefix(&name_prefix);
-				resistor.get_values().print();
+				resistor.values.print();
 			}
 			
 		}

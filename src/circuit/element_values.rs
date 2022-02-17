@@ -1,10 +1,10 @@
 pub mod element_values {
 	use colored::*;
 	pub struct ElementValues {
-		voltage: (f32, bool),
-		resistance: (f32, bool),
-		current: (f32, bool),
-		power: (f32, bool)
+		pub voltage: (f32, bool),
+		pub resistance: (f32, bool),
+		pub current: (f32, bool),
+		pub power: (f32, bool)
 	}
 	
 	impl ElementValues {
@@ -25,11 +25,6 @@ pub mod element_values {
 			new_element.try_calc();
 			return new_element;
 		}
-		/* Getters */
-		pub fn get_voltage(&self) -> (f32, bool) {self.voltage}
-		pub fn get_resistance(&self) -> (f32, bool) {self.resistance}
-		pub fn get_current(&self) -> (f32, bool) {self.current}
-		pub fn get_power(&self) -> (f32, bool) {self.power}
 	
 		pub fn print(&self) {
 			//Prints the values of the object

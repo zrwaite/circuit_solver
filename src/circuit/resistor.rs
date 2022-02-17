@@ -2,14 +2,12 @@ pub mod resistor {
 	use crate::element_values::element_values as element_values;
 	
 	pub struct Resistor {
-		values: element_values::ElementValues,
-		name: String
+		pub values: element_values::ElementValues,
+		pub name: String
 	}
 	
 	impl Resistor {
 		/* Getters */
-		pub fn get_values(&self) -> &element_values::ElementValues {&self.values}
-		pub fn get_name(&self) -> &str {&self.name}
 		pub fn print(&self) {
 			println!("{} values:", self.name);
 			self.values.print();

@@ -1,5 +1,5 @@
 [package]
-name = "curcuit_solver"
+name = "circuit_solver"
 version = "0.1.0"
 edition = "2021"
 
