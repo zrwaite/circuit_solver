@@ -1,4 +1,4 @@
-pub mod commands {
+pub mod parse {
 	use crate::terminal_functions;
 	use terminal_functions::terminal_functions as tf;
 	use std::collections::HashMap;
@@ -67,4 +67,23 @@ pub mod commands {
 		};
 		(f32_value, true)
 	}	
+
+	pub fn get_index(array:&Vec<String>, element:&String) -> (usize, bool){
+		for (index, value) in array.iter().enumerate() {
+			if value == element {
+				return (index, true);
+			}
+		}
+		(0, false)
+	}
+
+	pub fn line_to_vec(line:String) -> Vec<String> {
+		let line_strings = line.split_whitespace();
+		let line_slices: Vec<&str> = line_strings.collect();
+		let mut line_vec =  Vec::new();
+		for element in line_slices.iter() {
+			line_vec.push(element.to_string());
+		}
+		return line_vec;
+	}
 }

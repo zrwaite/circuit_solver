@@ -48,6 +48,13 @@ pub mod circuit {
 			}
 			resistor_names
 		}
+		pub fn get_element_names(&self) -> Vec<String> {
+			let mut element_names = Vec::new();
+			element_names.append(&mut self.get_current_source_names());
+			element_names.append(&mut self.get_voltage_source_names());
+			element_names.append(&mut self.get_resistor_names());
+			element_names
+		}
 		pub fn add_resistor(
 			&mut self,
 			name: String,

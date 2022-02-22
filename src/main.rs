@@ -1,4 +1,4 @@
-mod commands;
+mod parse;
 #[path = "circuit.rs"] mod circuit;
 #[path = "circuit/element_values.rs"] mod element_values;
 #[path = "circuit/circuit_node.rs"] mod circuit_node;

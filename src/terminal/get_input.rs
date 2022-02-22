@@ -1,6 +1,6 @@
 pub mod get_input {
-	use crate::terminal_functions;
-	use terminal_functions::terminal_functions as tf;
+	use crate::terminal_functions::terminal_functions as tf;
+	use crate::parse::parse as parse;
 	use std::io;
 	use colored::*;
 	pub fn name(prompt:String) -> String {
@@ -11,7 +11,13 @@ pub mod get_input {
 			.expect("Failed to read line");
 		return name.trim().to_string();
 	}
-	
+	pub fn line() -> String{
+		let mut line = String::new();
+		io::stdin()
+			.read_line(&mut line)
+			.expect("Failed to read line");
+		return line;
+	}
 	pub fn value(prompt:String) -> f32 {
 		let value: f32;
 		loop {
@@ -38,13 +44,6 @@ pub mod get_input {
 		io::stdin()
 			.read_line(&mut colour_line)
 			.expect("Failed to read line");
-		
-		let colour_strings = colour_line.split_whitespace();
-		let colour_slices: Vec<&str> = colour_strings.collect();
-		let mut colours =  Vec::new();
-		for colour in colour_slices.iter() {
-			colours.push(colour.to_string());
-		}
-		return colours;
+		return parse::line_to_vec(colour_line);
 	}
 }

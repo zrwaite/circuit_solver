@@ -2,13 +2,6 @@ pub mod terminal_functions {
 	use std::io;
 	use std::io::Write;
 	use colored::*;
-	pub fn read_line() -> String{
-		let mut line = String::new();
-		io::stdin()
-			.read_line(&mut line)
-			.expect("Failed to read line");
-		return line;
-	}
 	pub fn print(prompt:&str) {
 		print!("{}", prompt.cyan());
 		io::stdout().flush().unwrap();

@@ -7,11 +7,6 @@ pub mod resistor {
 	}
 	
 	impl Resistor {
-		/* Getters */
-		pub fn print(&self) {
-			println!("{} values:", self.name);
-			self.values.print();
-		}
 		pub fn new(
 			resistance: (f32, bool),
 			name: String

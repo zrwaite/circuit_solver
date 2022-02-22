@@ -1,5 +1,6 @@
 pub mod terminal {
-	use crate::commands::commands as commands;
+	//add_n -r 
+	use crate::parse::parse as parse;
 	use crate::circuit::circuit as circuit;
 	use crate::circuit_node::circuit_node as node;
 	use crate::get_input::get_input as get_input;
@@ -13,7 +14,7 @@ pub mod terminal {
 		tf::println_header("Enter commands here. \"help\" for more info");
 		loop {
 			tf::print("> ");
-			let command_line = tf::read_line();
+			let command_line = get_input::line();
 			let command_slices: Vec<&str> = command_line.split_whitespace().collect();
 			let mut command_strings =  Vec::new();
 			for command in command_slices.iter() {
@@ -53,24 +54,75 @@ pub mod terminal {
 		}
 		return true;
 	}
-	
+	//add_n -r R3 R1 R2 -v V1+ V2- -c 
 	pub fn add_node(
-		flags: (HashMap<String, String>, Vec<String>, bool), 
-		resistors: Vec<String>, 
-		current_sources: Vec<String>,
-		voltage_sources: Vec<String>) -> (node::Node, bool) {
-		let new_node = node::Node::new();
+		flags: (HashMap<String, String>, Vec<String>, bool), voltage_source_names: Vec<String>, resistor_names: Vec<String>, current_source_names: Vec<String>) -> (node::Node, bool) {
+		let mut new_node = node::Node::new();
+		let mut num_connections = 0;
 		let mut success = true;
-		for (key, value) in flags.0 {
-			match key.to_lowercase().as_str() {
-				"r"=> {
-					
-				}
-				"v"=> {
-
-				}
-				_ => {
-					tf::println_fail(&format!("Invalid flag -{}", key));
+		for (key, values) in flags.0 {
+			for value in parse::line_to_vec(values).iter(){
+				match key.to_lowercase().as_str() {
+					"r"=> {
+						if resistor_names.contains(&value.clone()){
+							let index_found = parse::get_index(&resistor_names, &value);
+							if index_found.1 {
+								new_node.add_resistor(index_found.0);
+								num_connections+=1;
+							} else {
+								panic!("Array contains element but element not found");
+							}
+						} else {
+							tf::println_fail(&format!("Resistor not found: {}", value));
+							success = false;
+						}
+					}
+					"v"=> {
+						let sign = value[value.len()-1..value.len()].to_string();
+						let name = value[0..value.len()-1].to_string();
+						if !(sign.eq("-") || sign.eq("+")) {
+							tf::println_fail(&format!("Voltage Source direction not properly specified: {}", value));
+							success = false;
+							continue;
+						}
+						if voltage_source_names.contains(&name.clone()){
+							let index_found = parse::get_index(&voltage_source_names, &name);
+							if index_found.1 {
+								new_node.add_voltage_source(index_found.0, sign.eq("+"));
+								num_connections+=1;
+							} else {
+								panic!("Array contains element but element not found");
+							}
+						} else {
+							tf::println_fail(&format!("Voltage Source not found: {}", name));
+							success = false;
+						}
+					}
+					"c"=> {
+						let sign = value[value.len()-1..value.len()].to_string();
+						let name = value[0..value.len()-1].to_string();
+						if !(sign.eq("-") || sign.eq("+")) {
+							tf::println_fail(&format!("Current Source direction not properly specified: {}", value));
+							success = false;
+							continue;
+						}
+						if current_source_names.contains(&name.clone()){
+							let index_found = parse::get_index(&current_source_names, &name);
+							if index_found.1 {
+								new_node.add_current_source(index_found.0, sign.eq("+"));
+								num_connections+=1;
+							} else {
+								panic!("Array contains element but element not found");
+							}
+						} else {
+							tf::println_fail(&format!("Current Source not found: {}", name));
+							success = false;
+						}
+					}
+					_ => {
+						tf::println_fail(&format!("Invalid flag -{}", key));
+						success = false;
+					}
 				}
 			}
 		}
@@ -78,25 +130,35 @@ pub mod terminal {
 			match double_flag.to_lowercase().as_str() {
 				_ => {
 					tf::println_fail(&format!("Invalid flag --{}", double_flag));
+					success = false;
 				}
 			}
+		}
+		if num_connections < 2 {
+			tf::println_info("At least 2 connections required");
+			success = false;
 		}
 		(new_node, success)
 	}
 
 	
-	pub fn add_elem(elem_type:&str, flags: (HashMap<String, String>, Vec<String>, bool)) -> (String, f32, bool) {
+	pub fn add_elem(elem_type:&str, flags: (HashMap<String, String>, Vec<String>, bool), used_names:Vec<String>) -> (String, f32, bool) {
 		let mut success = true;
 		let mut r_name = ("".to_string(), false);
 		let mut r_value = (0.0, false);
 		for (key, value) in flags.0 {
 			match key.to_lowercase().as_str() {
 				"n"=> {
-					r_name = (value, true);
+					r_name = (value.clone(), true);
+					if used_names.contains(&value){
+						r_name.1 = false;
+						tf::println_fail("Element name already in use");
+						success = false;
+					}
 				}
 				"v"=> {
-					let fail_message = &format!("Invalid value -v {}", value);
-					r_value = commands::parse_f32(value, fail_message);
+					let fail_message = &format!("Invalid value -v: {}", value);
+					r_value = parse::parse_f32(value, fail_message);
 					if !r_value.1 {success = false};
 				}
 				_ => {
@@ -124,37 +186,37 @@ pub mod terminal {
 	}
 	
 	pub fn add_r(command_strings: Vec<String>, circuit: &mut circuit::Circuit) {
-		let flags = commands::get_flags(command_strings);
+		let flags = parse::get_flags(command_strings);
 		//Failed to get flags from command line
 		if !flags.2 {return;}
-		let resistance = add_elem("resistor", flags);
+		let resistance = add_elem("resistor", flags, circuit.get_element_names());
 		if !resistance.2 {return;}
 		println!("{}", "Added!".green());
 		circuit.add_resistor(resistance.0, (resistance.1, true));
 	}
 	pub fn add_c(command_strings: Vec<String>, circuit: &mut circuit::Circuit) {
-		let flags = commands::get_flags(command_strings);
+		let flags = parse::get_flags(command_strings);
 		//Failed to get flags from command line
 		if !flags.2 {return;}
-		let current_source = add_elem("current", flags);
+		let current_source = add_elem("current", flags, circuit.get_element_names());
 		if !current_source.2 {return;}
 		println!("{}", "Added!".green());
 		circuit.add_current_source(current_source.0, (current_source.1, true));
 	}
 	pub fn add_v(command_strings: Vec<String>, circuit: &mut circuit::Circuit) {
-		let flags = commands::get_flags(command_strings);
+		let flags = parse::get_flags(command_strings);
 		//Failed to get flags from command line
 		if !flags.2 {return;}
-		let voltage_source = add_elem("voltage", flags);
+		let voltage_source = add_elem("voltage", flags, circuit.get_element_names());
 		if !voltage_source.2 {return;}
 		println!("{}", "Added!".green());
 		circuit.add_voltage_source(voltage_source.0, (voltage_source.1, true));
 	}
 	pub fn add_n(command_strings: Vec<String>, circuit: &mut circuit::Circuit) {
-		let flags = commands::get_flags(command_strings);
+		let flags = parse::get_flags(command_strings);
 		//Failed to get flags from command line
 		if !flags.2 {return;}
-		let node = add_node(flags, circuit.get_resistor_names(), circuit.get_current_source_names(), circuit.get_voltage_source_names());
+		let node = add_node(flags, circuit.get_voltage_source_names(), circuit.get_resistor_names(), circuit.get_current_source_names());
 		if !node.1 {return;}
 		circuit.add_node();
 		println!("{}", "Added!".green());
