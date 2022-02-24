@@ -79,23 +79,41 @@ pub mod circuit {
 		pub fn add_node(&mut self) {
 			self.nodes.push(node::Node::new());
 		}
-		pub fn print_elements(&self) {
-			for current_source in self.current_sources.iter() {
-				let name_prefix = format!("(I) {}: ", current_source.name);
-				tf::print_prefix(&name_prefix);
-				current_source.values.print();
-			}
-			for voltage_source in self.voltage_sources.iter() {
-				let name_prefix = format!("(V) {}: ", voltage_source.name);
-				tf::print_prefix(&name_prefix);
-				voltage_source.values.print();
-			}
+		pub fn print_resistors(&self) {
 			for resistor in self.resistors.iter() {
 				let name_prefix = format!("(R) {}: ", resistor.name);
 				tf::print_prefix(&name_prefix);
 				resistor.values.print();
 			}
-			
+		}
+		pub fn print_current_sources(&self) {
+			for current_source in self.current_sources.iter() {
+				let name_prefix = format!("(I) {}: ", current_source.name);
+				tf::print_prefix(&name_prefix);
+				current_source.values.print();
+			}
+		}
+		pub fn print_voltage_sources(&self) {
+			for voltage_source in self.voltage_sources.iter() {
+				let name_prefix = format!("(V) {}: ", voltage_source.name);
+				tf::print_prefix(&name_prefix);
+				voltage_source.values.print();
+			}
+		}
+		pub fn print_nodes(&self) {
+			for node in self.nodes.iter() {
+				println!("Node: ");
+				for &resistor in node.resistors.iter() {
+					println!("{}", self.resistors[resistor].name);
+				}
+			}
+		}
+
+		pub fn print_elements(&self) {
+			self.print_current_sources();
+			self.print_voltage_sources();
+			self.print_resistors();	
+			self.print_nodes();
 		}
 	}
 }

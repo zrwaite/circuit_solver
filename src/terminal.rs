@@ -43,7 +43,7 @@ pub mod terminal {
 				add_n(command_strings[1..].to_vec(), circuit);
 			}
 			"print" => {
-				circuit.print_elements();
+				print_circuit(command_strings[1..].to_vec(), circuit);
 			}
 			"q"=> {
 				return false;
@@ -54,7 +54,97 @@ pub mod terminal {
 		}
 		return true;
 	}
+	pub fn print_circuit(command_strings: Vec<String>, circuit: &circuit::Circuit) {
+		let flags = parse::get_flags(command_strings);
+		circuit.print_elements();
+	}
 	//add_n -r R3 R1 R2 -v V1+ V2- -c 
+	pub fn add_elem_to_node(key:String, value:String, new_node:&mut node::Node, 
+		resistor_names: &Vec<String>, current_source_names: &Vec<String>, 
+		voltage_source_names: &Vec<String> ) -> bool {
+		let mut success = false;
+		match key.to_lowercase().as_str() {
+			"r"=> {
+				if resistor_names.contains(&value.clone()){
+					let index_found = parse::get_index(&resistor_names, &value);
+					if index_found.1 {
+						new_node.add_resistor(index_found.0);
+					} else {
+						panic!("Array contains element but element not found");
+					}
+				} else {
+					tf::println_fail(&format!("Resistor not found: {}", value));
+					success = false;
+				}
+			}
+			"v"=> {
+				let sign = value[value.len()-1..value.len()].to_string();
+				let name = value[0..value.len()-1].to_string();
+				if !(sign.eq("-") || sign.eq("+")) {
+					tf::println_fail(&format!("Voltage Source direction not properly specified: {}", value));
+					return false;
+				}
+				if voltage_source_names.contains(&name.clone()){
+					let index_found = parse::get_index(&voltage_source_names, &name);
+					if index_found.1 {
+						new_node.add_voltage_source(index_found.0, sign.eq("+"));
+					} else {
+						panic!("Array contains element but element not found");
+					}
+				} else {
+					tf::println_fail(&format!("Voltage Source not found: {}", name));
+					success = false;
+				}
+			}
+			"c"=> {
+				let sign = value[value.len()-1..value.len()].to_string();
+				let name = value[0..value.len()-1].to_string();
+				if !(sign.eq("-") || sign.eq("+")) {
+					tf::println_fail(&format!("Current Source direction not properly specified: {}", value));
+					return false;
+				}
+				if current_source_names.contains(&name.clone()){
+					let index_found = parse::get_index(&current_source_names, &name);
+					if index_found.1 {
+						new_node.add_current_source(index_found.0, sign.eq("+"));
+					} else {
+						panic!("Array contains element but element not found");
+					}
+				} else {
+					tf::println_fail(&format!("Current Source not found: {}", name));
+					success = false;
+				}
+			}
+			_ => {
+				tf::println_fail(&format!("Invalid flag -{}", key));
+				success = false;
+			}
+		}
+		success
+	}
+	pub fn add_more_connections(
+		new_node: &mut node::Node, 
+		resistor_names: &Vec<String>,
+		current_source_names: &Vec<String>,
+		voltage_source_names: &Vec<String>) -> i32{
+		let mut added_connections = 0;
+		let resistor_list = get_input::name("Enter resistor names: ".to_string());
+		for value in parse::line_to_vec(resistor_list).iter() {
+			let added = add_elem_to_node("r".to_string(), value.to_string(), new_node, &resistor_names, &current_source_names, &voltage_source_names);
+			if added {added_connections += 1}
+		}
+		let voltage_source_list = get_input::name("Enter voltage source names: ".to_string());
+		for value in parse::line_to_vec(voltage_source_list).iter() {
+			let added = add_elem_to_node("v".to_string(), value.to_string(), new_node, &resistor_names, &current_source_names, &voltage_source_names);
+			if added {added_connections += 1}
+		}
+		let current_source_list = get_input::name("Enter current source names: ".to_string());
+		for value in parse::line_to_vec(current_source_list).iter() {
+			let added = add_elem_to_node("c".to_string(), value.to_string(), new_node, &resistor_names, &current_source_names, &voltage_source_names);
+			if added {added_connections += 1}
+		}
+		added_connections
+	}
 	pub fn add_node(
 		flags: (HashMap<String, String>, Vec<String>, bool), voltage_source_names: Vec<String>, resistor_names: Vec<String>, current_source_names: Vec<String>) -> (node::Node, bool) {
 		let mut new_node = node::Node::new();
@@ -62,68 +152,8 @@ pub mod terminal {
 		let mut success = true;
 		for (key, values) in flags.0 {
 			for value in parse::line_to_vec(values).iter(){
-				match key.to_lowercase().as_str() {
-					"r"=> {
-						if resistor_names.contains(&value.clone()){
-							let index_found = parse::get_index(&resistor_names, &value);
-							if index_found.1 {
-								new_node.add_resistor(index_found.0);
-								num_connections+=1;
-							} else {
-								panic!("Array contains element but element not found");
-							}
-						} else {
-							tf::println_fail(&format!("Resistor not found: {}", value));
-							success = false;
-						}
-					}
-					"v"=> {
-						let sign = value[value.len()-1..value.len()].to_string();
-						let name = value[0..value.len()-1].to_string();
-						if !(sign.eq("-") || sign.eq("+")) {
-							tf::println_fail(&format!("Voltage Source direction not properly specified: {}", value));
-							success = false;
-							continue;
-						}
-						if voltage_source_names.contains(&name.clone()){
-							let index_found = parse::get_index(&voltage_source_names, &name);
-							if index_found.1 {
-								new_node.add_voltage_source(index_found.0, sign.eq("+"));
-								num_connections+=1;
-							} else {
-								panic!("Array contains element but element not found");
-							}
-						} else {
-							tf::println_fail(&format!("Voltage Source not found: {}", name));
-							success = false;
-						}
-					}
-					"c"=> {
-						let sign = value[value.len()-1..value.len()].to_string();
-						let name = value[0..value.len()-1].to_string();
-						if !(sign.eq("-") || sign.eq("+")) {
-							tf::println_fail(&format!("Current Source direction not properly specified: {}", value));
-							success = false;
-							continue;
-						}
-						if current_source_names.contains(&name.clone()){
-							let index_found = parse::get_index(&current_source_names, &name);
-							if index_found.1 {
-								new_node.add_current_source(index_found.0, sign.eq("+"));
-								num_connections+=1;
-							} else {
-								panic!("Array contains element but element not found");
-							}
-						} else {
-							tf::println_fail(&format!("Current Source not found: {}", name));
-							success = false;
-						}
-					}
-					_ => {
-						tf::println_fail(&format!("Invalid flag -{}", key));
-						success = false;
-					}
-				}
+				let added = add_elem_to_node(key.clone(), value.to_string(), &mut new_node, &resistor_names, &current_source_names, &voltage_source_names);
+				if added {num_connections += 1}
 			}
 		}
 		for double_flag in flags.1.iter() {
@@ -134,14 +164,33 @@ pub mod terminal {
 				}
 			}
 		}
-		if num_connections < 2 {
-			tf::println_info("At least 2 connections required");
-			success = false;
+		let mut looped = false;
+		loop {
+			let mut add_more = false;
+			if num_connections < 2{
+				if num_connections == 0 && looped{
+					tf::println_info("At least 2 connections required");
+					let add_more_input = get_input::name("Cancel? [y]/[n]: ".to_string());
+					if add_more_input.eq("y") {
+						success = false;
+						break;
+					}
+				}
+				add_more = true;
+			} else {
+				let add_more_input = get_input::name("Add more elements? [y]/[n]: ".to_string());
+				if add_more_input.eq("y") {add_more = true}
+			}
+			if add_more {
+				num_connections+=add_more_connections(&mut new_node, &resistor_names, &current_source_names, &voltage_source_names);
+			} else {
+				break;
+			}
+			looped = true;
 		}
 		(new_node, success)
 	}
 
-	
 	pub fn add_elem(elem_type:&str, flags: (HashMap<String, String>, Vec<String>, bool), used_names:Vec<String>) -> (String, f32, bool) {
 		let mut success = true;
 		let mut r_name = ("".to_string(), false);
